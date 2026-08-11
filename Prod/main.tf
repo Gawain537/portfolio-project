@@ -20,11 +20,18 @@ resource "azurerm_storage_account" "storage_account" {
   }
 }
 
-resource "azurerm_storage_blob" "example" {
-  name                   = "index.html"
-  storage_account_name   = azurerm_storage_account.storage_account.name
-  storage_container_name = "$web"
-  type                   = "Block"
-  content_type           = "text/html"
-  source                 = "index.html"
+resource "azurerm_static_web_app" "main" {
+  name                = "swa-myapp-prod"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  # SKU - Free or Standard
+  sku_tier = "Standard"
+  sku_size = "Standard"
+
+  tags = {
+    environment = "production"
+    application = "myapp"
+    managed_by  = "terraform"
+  }
 }
