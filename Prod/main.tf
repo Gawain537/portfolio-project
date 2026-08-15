@@ -14,11 +14,16 @@ resource "azurerm_storage_account" "storage_account" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
-
-  static_website {
-    index_document = "index.html"
-  }
+  
+  # The static_website block has been removed from here!
 }
+
+resource "azurerm_storage_account_static_website" "static_website" {
+  storage_account_id = azurerm_storage_account.storage_account.id
+  
+  index_document     = "index.html"
+}
+
 
 resource "azurerm_static_web_app" "main" {
   name                = "swa-myapp-prod"
