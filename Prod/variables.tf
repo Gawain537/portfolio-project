@@ -9,3 +9,8 @@ variable "ARM_SUBSCRIPTION_ID" {
   description = "The Azure Subscription ID"
   default    = "4c7d4e4e-eee6-40d3-8d69-edbb861b2345"
 }
+
+variable "environment" {
+  type    = string
+  default = "portfolio"
+}
