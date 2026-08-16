@@ -4,11 +4,19 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>4.11.0"
+      version = "~> 4.80.0"
     }
 
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 1.0" # Use the version you need
+    }
 
   }
+}
+
+provider "azapi" {
+  subscription_id = var.ARM_SUBSCRIPTION_ID
 }
 
 provider "azurerm" {
