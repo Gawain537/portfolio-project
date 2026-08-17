@@ -101,22 +101,22 @@ resource "azapi_resource" "ai_foundry_project" {
 
 resource "azapi_resource" "aifoundry_deployment_gpt_4o" {
   type      = "Microsoft.CognitiveServices/accounts/deployments@2023-05-01"
-  name      = "gpt-4o"
-  parent_id = azapi_resource.ai_foundry_project.id
+  name      = "gpt-5.4-nano"
+  parent_id = azapi_resource.ai_foundry.id
   depends_on = [
     azapi_resource.ai_foundry
   ]
 
   body = {
     sku = {
-      name     = "Standard"
+      name     = "GlobalStandard"
       capacity = 1
     }
     properties = {
       model = {
         format  = "OpenAI"
-        name    = "gpt-4o"
-        version = "2024-11-20"
+        name    = "gpt-5.4-nano"
+        version = "2026-03-17"
       }
     }
   }
