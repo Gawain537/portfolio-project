@@ -3,11 +3,13 @@ data "azurerm_client_config" "current" {}
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
   name     = "rg-oconnor-${var.environment}"
+  tags     = local.default_tags
 }
 
 resource "azurerm_storage_account" "storage_account" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+  tags     = local.default_tags
 
   name = "stoconnor${var.environment}"
 
@@ -29,7 +31,7 @@ resource "azurerm_static_web_app" "main" {
   name                = "swa-myapp-prod"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-
+  tags     = local.default_tags
   # SKU - Free or Standard
   sku_tier = "Standard"
   sku_size = "Standard"
@@ -39,12 +41,6 @@ resource "azurerm_static_web_app" "main" {
       repository_url,
       repository_branch,
     ]
-  }
-
-  tags = {
-    environment = "production"
-    application = "myapp"
-    managed_by  = "terraform"
   }
 }
 
@@ -83,6 +79,7 @@ resource "azapi_resource" "ai_foundry_project" {
   parent_id                 = azapi_resource.ai_foundry.id
   location                  = var.resource_group_location
   schema_validation_enabled = false
+  tags     = local.default_tags
 
   body = {
     sku = {
