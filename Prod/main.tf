@@ -9,21 +9,30 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_storage_account" "storage_account" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  tags     = local.default_tags
+  tags                = local.default_tags
 
   name = "stoconnor${var.environment}"
 
   account_tier             = "Standard"
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
-  
-  # The static_website block has been removed from here!
+
+  https_traffic_only_enabled = true
+  min_tls_version            = "TLS1_2"
+  allow_nested_items_to_be_public = false
+  public_network_access_enabled = false
+  shared_access_key_enabled     = true
+
+  network_rules {
+    default_action = "Deny"
+    bypass         = ["AzureServices"]
+  }
 }
 
 resource "azurerm_storage_account_static_website" "static_website" {
   storage_account_id = azurerm_storage_account.storage_account.id
-  
-  index_document     = "index.html"
+
+  index_document = "index.html"
 }
 
 
@@ -31,10 +40,10 @@ resource "azurerm_static_web_app" "main" {
   name                = "swa-myapp-prod"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  tags     = local.default_tags
+  tags                = local.default_tags
   # SKU - Free or Standard
-  sku_tier = "Standard"
-  sku_size = "Standard"
+  sku_tier = "Free"
+  sku_size = "Free"
 
   lifecycle {
     ignore_changes = [
@@ -79,7 +88,7 @@ resource "azapi_resource" "ai_foundry_project" {
   parent_id                 = azapi_resource.ai_foundry.id
   location                  = var.resource_group_location
   schema_validation_enabled = false
-  tags     = local.default_tags
+  tags                      = local.default_tags
 
   body = {
     sku = {
@@ -116,5 +125,34 @@ resource "azapi_resource" "aifoundry_deployment_gpt_4o" {
         version = "2026-03-17"
       }
     }
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "static_website_diagnostics" {
+  name                       = "stoconnor-static-website-diagnostics-${var.environment}"
+  target_resource_id         = "${azurerm_storage_account.storage_account.id}/blobServices/default"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+
+  enabled_log {
+    category_group = "allLogs"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+    #enabled  = true
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "ai_foundry_diagnostics" {
+  name                       = "aifoundry-diagnostics-${var.environment}"
+  target_resource_id         = azapi_resource.ai_foundry.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+
+  enabled_log {
+    category_group = "allLogs"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
   }
 }

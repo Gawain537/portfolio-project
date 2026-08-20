@@ -1,6 +1,9 @@
 # Local .terraform directories
 .terraform/
 
+# AI agent instructions
+agents.md
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

@@ -1,10 +1,10 @@
 resource "azurerm_resource_group" "sentinel_rg" {
-  name     = "rg-sentinel-demo"
+  name     = "rg-sentinel-${var.environment}"
   location = var.resource_group_location
 }
 
 resource "azurerm_log_analytics_workspace" "law" {
-  name                = "law-sentinel-demo"
+  name                = "law-sentinel-${var.environment}"
   location            = azurerm_resource_group.sentinel_rg.location
   resource_group_name = azurerm_resource_group.sentinel_rg.name
   sku                 = "PerGB2018"

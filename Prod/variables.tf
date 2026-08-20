@@ -9,5 +9,5 @@ variable "ARM_SUBSCRIPTION_ID" {
 }
 
 variable "environment" {
-  type    = string
+  type = string
 }
